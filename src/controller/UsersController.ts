@@ -1,7 +1,7 @@
 import Knex from '../database/connection';
 import { Request, Response } from 'express';
 
-class usersController{
+class UsersController{
 
     async index (request: Request, response: Response) {
 
@@ -19,4 +19,4 @@ class usersController{
 
 }
 
-export default usersController;
+export default UsersController;
