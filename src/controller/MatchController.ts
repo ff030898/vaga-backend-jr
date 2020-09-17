@@ -13,6 +13,7 @@ class MatchController{
                 name: match.name,
             };
         });
+
     
         return response.json(serializedMatch);
     }
