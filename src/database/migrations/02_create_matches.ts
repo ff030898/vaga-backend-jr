@@ -5,8 +5,6 @@ export async function up(knex: Knex){
 
     return knex.schema.createTable('matches', table => {
     table.increments('id').primary();
-    table.date('date').notNullable();
-    table.time('time').notNullable();
 
     table.integer('team1_id')
     .unsigned()
@@ -25,6 +23,7 @@ export async function up(knex: Knex){
     table.integer('goals_team2').notNullable();
     table.integer('round').notNullable();
     table.integer('winner').notNullable();
+
     });
 }
 

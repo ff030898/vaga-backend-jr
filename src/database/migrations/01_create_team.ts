@@ -13,6 +13,7 @@ export async function up(knex: Knex){
     table.integer('goals_difference').notNullable();
     table.integer('goals_for').notNullable();
     table.integer('goals_against').notNullable();
+  
     });
 }
 
