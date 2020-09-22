@@ -1,6 +1,6 @@
 import knex from 'knex';
 
-export async function seed(Knex: knex){
+/*export async function seed(Knex: knex){
  await Knex('matches').insert([
 
     //Partidas do time 1
@@ -23,6 +23,10 @@ export async function seed(Knex: knex){
     {team1_id: 4, goals_team1: 4, team2_id: 2, goals_team2: 4, winner: 0},
     {team1_id: 4, goals_team1: 3, team2_id: 3, goals_team2: 2, winner: 2}
 
+ 
+    Caso queira cadastrar os jogos automaticamente mova esse arquivo 
+    para dentro da pasta seeds e não se esqueça de atualizar 
+    os pontos de cada time na seed-create_team.
 
  ]);
-}
+}*/
