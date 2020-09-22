@@ -15,7 +15,6 @@ class MatchController {
           goals_team1: match.goals_team1,
           team2_id: match.team2_id,
           goals_team2: match.goals_team2,
-          round: match.round,
           winner: match.winner,
         };
       });
@@ -38,9 +37,15 @@ class MatchController {
         goals_team1,
         team2_id,
         goals_team2,
-        round,
       } = request.body;
 
+    //verificar se o campeonato já acabou
+    
+    const finishChampion = await Knex("matches").select("*");
+
+    if(finishChampion.length >= 12){
+        return response.status(401).json({error: 'The championship is over. See the champion in the overall standings'});
+    }
 
     const team1Exist = await Knex("team").where("id", team1_id);
     const team2Exist = await Knex("team").where("id", team2_id);
@@ -57,6 +62,19 @@ class MatchController {
       return response.status(401).json({ error: 'Incorrect id to meet time 2'});
     };
 
+
+    //Verificar se o time já jogou na rodada
+
+    const matchRepeat = await Knex("matches")
+    .where("team1_id", team1_id)
+    .where("team2_id", team2_id);
+
+
+    if(matchRepeat.length > 0){
+      return response.status(401).json({ error: 'These two teams have already played'});
+    };
+
+  
       //Variavel trx serve para verificar se os dois insert deram certo. Se um falhar ele não executa nenhum dos dois
 
       const trx = await Knex.transaction();
@@ -74,7 +92,6 @@ class MatchController {
         goals_team1,
         team2_id,
         goals_team2,
-        round,
         winner: winner,
       };
 
@@ -97,8 +114,10 @@ class MatchController {
           name,
           score,
           ties,
-          goals_difference,
+          matches,
           goals_for,
+          goals_difference
+  
         } = team[0];
   
   
@@ -110,9 +129,10 @@ class MatchController {
         const teamUpdate = {
           score: (score + 1),
           ties: (ties + 1),
-          goals_difference: (goals_difference + goals_different_matches_ties),
+          matches: (matches + 1),
           goals_for: (goals_for + goals_for_match_ties),
-          goals_against: sg,
+          goals_difference: (goals_difference + goals_different_matches_ties),
+          goals_against: sg
         };
   
         await trx("team").update(teamUpdate).where({ id: team1_id });
@@ -126,8 +146,9 @@ class MatchController {
           name: name2,
           score: score2,
           ties: ties2,
-          goals_difference: goals_difference2,
+          matches: matches2,
           goals_for: goals_for2,
+          goals_difference: goals_difference2
         } = team2[0];
   
   
@@ -136,8 +157,9 @@ class MatchController {
         const team2Update = {
           score: (score2 + 1),
           ties: (ties2 + 1),
-          goals_difference: (goals_difference2 + goals_different_matches_ties),
+          matches: (matches2 + 1),
           goals_for: (goals_for2 + goals_for_match_ties),
+          goals_difference: (goals_difference2 + goals_different_matches_ties),
           goals_against: sg,
         };
   
@@ -152,8 +174,7 @@ class MatchController {
           goals_team1: goals_team1,
           team2: name2,
           goals_team2: goals_team2,
-          result: "empate",
-          round
+          result: "a tie",
         });
 
       }catch(err){
@@ -170,8 +191,9 @@ class MatchController {
         name,
         score,
         victories,
-        goals_difference,
+        matches,
         goals_for,
+        goals_difference
       } = team[0];
 
 
@@ -186,24 +208,25 @@ class MatchController {
 
         teamDerroted = team2_id;
 
-        goals_difference_match = goals_team2;
         goals_for_match = goals_team1;
+        goals_difference_match = goals_team2;
+       
 
-
-        goals_difference_match_loser = goals_team1;
         goals_for_match_loser = goals_team2;
+        goals_difference_match_loser = goals_team1;
+        
 
 
       }else{
 
         teamDerroted = team1_id;
 
-        goals_difference_match = goals_team1;
         goals_for_match = goals_team2;
-
-
-        goals_difference_match_loser = goals_team2;
+        goals_difference_match = goals_team1;
+        
         goals_for_match_loser = goals_team1;
+        goals_difference_match_loser = goals_team2;
+        
       }
 
       var sg = (goals_for + goals_for_match) - (goals_difference + goals_difference_match);
@@ -211,9 +234,10 @@ class MatchController {
       const teamUpdate = {
         score: (score + 3),
         victories: (victories + 1),
-        goals_difference: (goals_difference + goals_difference_match),
+        matches: (matches + 1),
         goals_for: (goals_for + goals_for_match),
-        goals_against: sg,
+        goals_difference: (goals_difference + goals_difference_match),
+        goals_against: sg
       };
 
       await trx("team").update(teamUpdate).where({ id: winner });
@@ -226,8 +250,9 @@ class MatchController {
       const {
         name: name_loser,
         defeats,
-        goals_difference: goals_difference_loser,
+        matches:matches2,
         goals_for: goals_for_loser,
+        goals_difference: goals_difference_loser
        
       } = team2[0];
 
@@ -236,9 +261,10 @@ class MatchController {
 
       const teamUpdate2 = {
         defeats: defeats + 1,
-        goals_difference: (goals_difference_loser + goals_difference_match_loser),
+        matches: (matches2 + 1),
         goals_for: (goals_for_loser + goals_for_match_loser),
-        goals_against: sg_loser,
+        goals_difference: (goals_difference_loser + goals_difference_match_loser),
+        goals_against: sg_loser
       };
 
      
@@ -253,7 +279,6 @@ class MatchController {
         goals_winner: goals_for_match,
         loser: name_loser,
         goals_loser: goals_for_match_loser,
-        round
       });
 
       

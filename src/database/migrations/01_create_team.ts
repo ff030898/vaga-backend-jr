@@ -10,8 +10,9 @@ export async function up(knex: Knex){
     table.integer('victories').notNullable();
     table.integer('defeats').notNullable();
     table.integer('ties').notNullable();
-    table.integer('goals_difference').notNullable();
+    table.integer('matches').notNullable();
     table.integer('goals_for').notNullable();
+    table.integer('goals_difference').notNullable();
     table.integer('goals_against').notNullable();
   
     });

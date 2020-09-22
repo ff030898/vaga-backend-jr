@@ -14,7 +14,7 @@ async index (request: Request, response: Response) {
         .orderBy('name');
         
         return response.status(200).json(team);
-
+    
 
     }
 

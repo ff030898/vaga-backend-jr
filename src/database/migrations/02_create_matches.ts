@@ -21,7 +21,6 @@ export async function up(knex: Knex){
     .inTable('team');
 
     table.integer('goals_team2').notNullable();
-    table.integer('round').notNullable();
     table.integer('winner').notNullable();
 
     });
